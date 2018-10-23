@@ -1,15 +1,15 @@
-import React from 'react';
-import moment from 'moment';
+import React from "react";
+import moment from "moment";
 
-import {connect} from 'react-redux';
+import { connect } from "react-redux";
 
-import './AppHeader.css';
+import "./AppHeader.css";
 
-const addLeadingZero = (n = '') => {
+const addLeadingZero = (n = "") => {
   const str = `${n}`;
   switch (str.length) {
     case 0:
-      return '00';
+      return "00";
     case 1:
       return `0${n}`;
     default:
@@ -18,16 +18,16 @@ const addLeadingZero = (n = '') => {
 };
 
 const AppHeader = props => {
-  const {playerName, time, points} = props;
-  const duration = moment.duration(time, 'seconds');
+  const { playerName, time, points } = props;
+  const duration = moment.duration(time, "seconds");
 
   return (
-      <header className={"app-header"}>
-        <table>
-          <tbody>
+    <header className={"app-header"}>
+      <table>
+        <tbody>
           <tr>
             <td>Гравець:</td>
-            <td>{playerName || '---'}</td>
+            <td>{playerName || "---"}</td>
           </tr>
           <tr>
             <td>Результат:</td>
@@ -35,22 +35,21 @@ const AppHeader = props => {
           </tr>
           <tr>
             <td>Час:</td>
-            <td>{Math.floor(duration.asHours())}:{addLeadingZero(duration.minutes())}:{addLeadingZero(duration.seconds())}</td>
+            <td>
+              {Math.floor(duration.asHours())}:
+              {addLeadingZero(duration.minutes())}:
+              {addLeadingZero(duration.seconds())}
+            </td>
           </tr>
-          </tbody>
-        </table>
-      </header>
+        </tbody>
+      </table>
+    </header>
   );
 };
 
 const mapStateToProps = store => {
-  const {gameState} = store;
-  console.log(gameState);
-  return {
-    playerName:gameState.playerName,
-    time:999,
-    points:666
-  };
+  const { gameState } = store;
+  return { ...gameState };
 };
 
 export default connect(mapStateToProps)(AppHeader);

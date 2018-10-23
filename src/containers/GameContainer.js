@@ -9,8 +9,14 @@ import PauseMenu from "../components/Menu/PauseMenu";
 import {
   setPlayerName,
   startGame,
-  pauseGame
+  pauseGame,
+  timerTick,
+  figureRotate,
+  moveFigureLeft,
+  moveFigureRight,
+  moveFigureDown
 } from "../redux/actions/gameActions";
+import { getWallWithFigure } from "../helpers/gameHelpers";
 
 class GameContainer extends Component {
   constructor(props) {
@@ -28,23 +34,44 @@ class GameContainer extends Component {
   startGameClickHandler = () => this.props.setPlayerName(this.state.name);
 
   componentDidUpdate(prevProps) {
-    const { playerName, startGame } = this.props;
+    const { playerName, startGame, timerTick, paused, finished } = this.props;
     if (!prevProps.playerName && playerName) {
       startGame();
+    }
+    if (prevProps.paused && !paused) {
+      this.gameTimer = setInterval(timerTick, 1000);
+    }
+    if (paused && !prevProps.paused) {
+      clearInterval(this.gameTimer);
+    }
+    if ((paused && !prevProps.paused) || finished) {
+      clearInterval(this.gameTimer);
     }
   }
 
   interactionHandler = e => {
-    const { paused, startGame, pauseGame } = this.props;
+    const {
+      paused,
+      startGame,
+      pauseGame,
+      moveFigureLeft,
+      moveFigureRight,
+      moveFigureDown,
+      figureRotate
+    } = this.props;
 
     switch (e.key) {
       case "ArrowUp":
+        figureRotate();
         break;
       case "ArrowLeft":
+        moveFigureLeft();
         break;
       case "ArrowRight":
+        moveFigureRight();
         break;
       case "ArrowDown":
+        moveFigureDown();
         break;
       case "Escape":
         if (paused) {
@@ -92,14 +119,34 @@ class GameContainer extends Component {
   }
 }
 
-const mapStateToProps = ({ gameState }) => ({ ...gameState });
+const mapStateToProps = ({ gameState }) => {
+  const {
+    wall,
+    playerName,
+    paused,
+    finished,
+    figure,
+    figurePosition
+  } = gameState;
+  return {
+    wall: figure ? getWallWithFigure(wall, figure, figurePosition) : wall,
+    playerName,
+    paused,
+    finished
+  };
+};
 
 const mapDispatchToProps = dispatcher =>
   bindActionCreators(
     {
       setPlayerName,
       startGame,
-      pauseGame
+      pauseGame,
+      timerTick,
+      moveFigureLeft,
+      moveFigureRight,
+      moveFigureDown,
+      figureRotate
     },
     dispatcher
   );
